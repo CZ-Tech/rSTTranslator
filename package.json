@@ -1,0 +1,12 @@
+{
+  "name": "translate-rst",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "ForkKILLET",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^0.21.3",
+    "axios-rate-limit": "^1.3.0",
+    "restructured": "^0.0.11"
+  }
+}
