@@ -5,7 +5,8 @@ const crypto			= require("crypto")
 const qs				= require("querystring")
 
 axios.ins = {
-	baidu_fanyi: axios_rate_limit(axios.create(), { maxRPS: 1 })
+	baidu_fanyi: axios_rate_limit(axios.create(), { maxRPS: 1 }),
+	deepl: axios_rate_limit(axios.create(), { maxRPS: 1 })
 }
 
 const components = {
@@ -35,8 +36,18 @@ const components = {
 	},
 
 	work: {
-		deepl: node => {
-			// TODO: 册那，没有号
+		deepl: async node => {
+			const data = {
+				text: node.value,
+				source_lang: "EN",
+				target_lang: "ZH",
+			}
+
+			const res = await axios.ins.deepl
+				.post("https://deepl.lgf.im/translate", data)
+
+			if (res.data.err_code) process.stderr.write(`[ERROR] ${res.data}\n`)
+			node.value = res.data.result
 		},
 
 		baidu_fanyi: async node => {
@@ -86,7 +97,7 @@ pipe({
 	process:		"complete",
 	filter_work:	"default",
 	filter_process:	"default",
-	work:			"baidu_fanyi",
+	work:			"deepl",
 	render:			"json"
 })
 
