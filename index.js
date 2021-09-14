@@ -3,9 +3,13 @@ const axios				= require("axios")
 const axios_rate_limit	= require("axios-rate-limit")
 const crypto			= require("crypto")
 const qs				= require("querystring")
+const dotenv 			= require("dotenv")
+
+dotenv.config()
 
 axios.ins = {
 	baidu_fanyi: axios_rate_limit(axios.create(), { maxRPS: 1 }),
+	deepl_jsonrpc: axios_rate_limit(axios.create(), { maxRPS: 1 }),
 	deepl: axios_rate_limit(axios.create(), { maxRPS: 1 })
 }
 
@@ -41,9 +45,24 @@ const components = {
 				text: node.value,
 				source_lang: "EN",
 				target_lang: "ZH",
+				auth_key: process.env.deepl_key,
 			}
 
 			const res = await axios.ins.deepl
+				.post("https://api-free.deepl.com/v2/translate", qs.stringify(data))
+
+			if (res.data.err_code) process.stderr.write(`[ERROR] ${res.data}\n`)
+			node.value = res.data.translations[0].text
+		},
+
+		deepl_jsonrpc: async node => {
+			const data = {
+				text: node.value,
+				source_lang: "EN",
+				target_lang: "ZH",
+			}
+
+			const res = await axios.ins.deepl_jsonrpc
 				.post("https://deepl.lgf.im/translate", data)
 
 			if (res.data.err_code) process.stderr.write(`[ERROR] ${res.data}\n`)

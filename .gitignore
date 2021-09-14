@@ -1,3 +1,4 @@
 gm*/
 node_modules/
 
+.env
